@@ -1,0 +1,85 @@
+sing System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class StairSpawner : MonoBehaviour
+{
+    [SerializeField]
+    GameObject stairPref;
+    int index = 0;
+    [SerializeField]
+    float stairtWeight = 2f, stairtHeight = 0.5f;
+    [SerializeField]
+   int maxX = 5, miniX = -5;
+    public static  StairSpawner instance;
+    List<GameObject> stairlist = new List<GameObject>();
+    float hue;
+
+    void Awake()
+    {
+        if (instance = null)
+            instance = this;
+        MakeObject();
+        IniColor();
+        for (int i=0;i<5;i++)
+        { 
+            makeNewstair();
+        
+        }
+    }
+    void IniColor() {
+        hue = UnityEngine.Random.Range(0f,1f);
+        Camera.main.backgroundColor = Color.HSVToRGB(hue,0.6f,0.8f);
+    
+    }
+    private void MakeObject() {
+        for (int i = 0; i < 5; i++)
+        {
+            GameObject stair = Instantiate(stairPref);
+            stair.SetActive(false);
+            stairlist.Add(stair);
+        }
+    }
+    GameObject getstair() {
+        GameObject obj = null;
+        for (int i = 0; i < stairlist.Count; i++)
+        {
+            if (!stairlist[i].activeInHierarchy) {
+
+                obj = stairlist[i];
+                return obj;
+            }
+
+        }
+        return null;
+
+    }
+  public  void makeNewstair() {
+        int randomposx;
+        if (index == 0)
+            randomposx = 0;
+        else
+            randomposx =UnityEngine.Random.Range(miniX,maxX);
+        Vector2 newposition = new Vector2(randomposx,index *5);
+        GameObject stair = getstair();
+        stair.SetActive(true);
+        stair.transform.position = newposition;
+        stair.transform.rotation = Quaternion.identity;
+        stair.transform.localScale = new Vector2(stairtWeight,stairtHeight);
+        stair.transform.SetParent(transform);
+        setColor(stair);
+        index++;
+    }
+    void setColor(GameObject stair) {
+        if (UnityEngine.Random.Range(0, 3) != 0)
+        {
+            hue += 0.08f;
+            if (hue >= 1)
+            {
+
+                hue -= 1f;
+            }
+        }
+        stair.GetComponent<SpriteRenderer>().color = Color.HSVToRGB(hue, 0.6f, 0.8f);
+    }
+}
